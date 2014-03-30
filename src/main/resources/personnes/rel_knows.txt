@@ -1,0 +1,81 @@
+1 : professionnel 2 : parenté 3 : sociabilité	Antoine Girard	Aymé d'Eschenon maire de Dijon	Bernard de l'Olive	Bernard Humbelot	Charles Le Téméraire	Collette La Camuse	Drouot de Marnay	Etienne Berbisey	Frère Jean Jaquier	Girard Le Coq	Girard Mareschal	Guillaume Billocard	Guillemin Le Jeune	Henri	Huguenin Boudier	Huguenin Girart	Humbelin Langeolet	Isabelle de Portugal	Jacot Martin	Jacques Borestel	Jacques Rabustel	Jean de Gray	Jean de Molesmes	Jean des Dames de Montbéliard	Jean Gaucher clerc Michel de Pons	Jean Gros	Jean Guénéaul	Jean Lanternier	Jean Martin	Jean Rabustel	Jeanne fille Isabeau femme Huot	Jeanne Rabustel	La femme de Girard Le Coq	La femme de Jean Bricet	La femme de Jean Gros	La femme de Michel Pons	La femme de Pierre Baudot	La femme Pierre Berbis	La femme Simon Naissant	Le beau-fils de Sybille Mutin	Le chancelier de Bourgogne	Le clerc de Girard Le Coq	Le clerc de Pierre Fusée	Le frère de Jean Cousin	Les enfants de Jean Rabustel	Les frères et sœurs et la mère d'Antoine Girard	Mairie de Soisson	Mairie de Dijon	Maître Mathieu, cousin de Pierre Fusée	Marguerite d'York	Mathelin Chenin	Me Guillaume de Gamay	Me Jean Bricet	Me Jean Fouquault	Me Thibaut Garnot	Mongin La Corne	Michel de Pons	Mgr de Tournay	Nicolas Bastier	Nicolas de Leaune	Odot Douay	Philiberte Rabustel	Philippe de Courcelles	Philippe Douhet	Philippe Genevoise	Philippe Le Bon	Philippe Luillier	Philippe Martin	Pierre Baudot	Pierre Bonféal	Pierre de Cologne	Pierre de Lattre	Pierre Fusée	Pierre Lesuoley	Pierre Rabustel	Ranconjour	Simon Naissant	Sybille Mutin veuve Jean de Rossay	Thibaud Liégeart	Ysabeau femme Huot
+Antoine Girard																														2																		1
+Aymé d'Eschenon maire de Dijon																														1																																	1												3
+Bernard de l'Olive																														1																																				1
+Bernard Humbelot																														3																																											1
+Charles Le Téméraire												3																		1																		1		2																		1
+Collette La Camuse																														3		3																									2																2
+Drouot de Marnay																														3
+Etienne Berbisey																										3				3																																																3
+Frère Jean Jaquier																														3																																									3
+Girard Le Coq																														1			2															1																									1
+Girard Mareschal																														3
+Guillaume Billocard					3																																											1		3
+Guillemin Le Jeune																														3
+Henri																													3	3																																																1
+Huguenin Boudier																														2																		1									1
+Huguenin Girart																														1																		1
+Humbelin Langeolet																														1																											1
+Isabelle de Portugal																														1																		1																		2			1
+Jacot Martin																														1																																				1
+Jacques Borestel																														1		3							3																																				3		3
+Jacques Rabustel																														2		2																														2													2
+Jean de Gray																														3											3
+Jean de Molesmes																														1											1
+Jean des Dames de Montbéliard																														3																																													3
+Jean Gaucher clerc Michel de Pons																														1																											1
+Jean Gros																														2											1							1																		1												2
+Jean Guénéaul	1																																															1																						1
+Jean Lanternier																														1
+Jean Martin														2																2																																																2
+Jean Rabustel	2	1	1	3	1	3	3	3	3	1	3		3	3	2	1	1	1	1	1	2	3	1	3	1	2		1	2			2	3				3	3	3		1		1		2	3	1	1	3		3		1				1		1	3		2	1			1			1	1	3	3	1	1	2	3	3	2	2	3
+Jeanne fille Isabeau femme Huot																																3																																																2
+Jeanne Rabustel						3														3	2									2	3							3	3						2																	2											3		2		3			3
+La femme de Girard Le Coq										2																				3																																											3
+La femme de Jean Bricet
+La femme de Jean Gros																										2
+La femme de Michel Pons						2																																										3									2																2
+La femme de Pierre Baudot																																3																																					2				3
+La femme Pierre Berbis																																3
+La femme Simon Naissant																				3										3		3																																													2
+Le beau-fils de Sybille Mutin																																																																														1
+Le chancelier de Bourgogne																						3	1			1		1		1		1																1
+Le clerc de Girard Le Coq										1
+Le clerc de Pierre Fusée						3																								1																											1																1
+Le frère de Jean Cousin																														3
+Les enfants de Jean Rabustel																					2									2		2																														2													2
+Les frères et sœurs et la mère d'Antoine Girard	2																													3
+Mairie de Soisson																														1																		1
+Mairie de Dijon	1	1			1					1		1			1	1		1		1						1	1			1											1						1			1							1		1							1		1	1	1			1						1
+Maître Mathieu, cousin de Pierre Fusée																														3																																											2
+Marguerite d'York					2							3																																				1
+Mathelin Chenin																														3
+Me Guillaume de Gamay																																																									1
+Me Jean Bricet																														1				2																							1
+Me Jean Fouquault																																																									1
+Me Thibaut Garnot																																																									1																1
+Michel de Pons						2																								1																							1
+Mgr de Tournay																														1																		1
+Nicolas Bastier													3																	1											1
+Nicolas de Leaune																														3																																														3
+Odot Douay
+Philiberte Rabustel																					2									2		2													2																														2
+Philippe de Courcelles		1																												1
+Philippe Douhet																																																																	3										3
+Philippe Genevoise																																																																3											3
+Philippe Le Bon			1		2													2	1											1											1
+Philippe Luillier						3																																																			1																1
+Pierre Baudot																														1							2																																				2
+Pierre Bonféal	1																													1
+Pierre de Cologne																														3																																													3
+Pierre de Lattre																														3
+Pierre Fusée						2				1																				1		3	3			2	2						1						2						1		1										1		2					1
+Pierre Lesuoley																														1																											1																1
+Pierre Rabustel		3																		3	2									2		2													2																	2		3	3						3
+Ranconjour																														3																														3
+Simon Naissant																				3										3		3							2
+Sybille Mutin veuve Jean de Rossay								3						2												2			2	2
+Thibaud Liégeart																														2																		1
+Ysabeau femme Huot																														3	2	3
+Mongin La Corne																														1																		1
+Philippe Martin					1																																											1
