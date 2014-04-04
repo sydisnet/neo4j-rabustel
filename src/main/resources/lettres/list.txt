@@ -1,0 +1,70 @@
+B 481-4	1440	Dijon	Mairie de Dijon	Pierre Fusée	Paris		Professionnel	Jean Rabustel	Girard Le Coq
+B 481-5	1443	Dijon	Mairie de Dijon	Pierre Fusée	Paris	Girard Le Coq	Professionnel	Jean Rabustel
+B 481-6	1442	Troyes	Sybille Mutin veuve Jean de Rossay	Jean Rabustel	Dijon		Privé	Etienne Berbisey	Jean Martin	Henri		Le beau-fils de Sybille Mutin
+B 481-7	1442	Bar-sur-Aube	Sybille Mutin veuve Jean de Rossay	Jean Rabustel	Dijon		Privé	Etienne Berbisey	Jean Gros
+B 481-8	1444	Dijon	Jean Rabustel	Pierre Fusée	Paris		Professionnel avec mentions privées	Bernard Humbelot	Pierre Baudot
+B 481-12	1449	Paris	Pierre Fusée	Jean Rabustel	Dijon		Professionnel avec mentions privées	Jeanne Rabustel	La femme de Pierre Baudot	Pierre Baudot
+B 481-13	1450	Paris	Pierre Fusée	Jean Rabustel	Dijon		Professionnel avec mentions privées	Pierre Lesuoley	Michel de Pons	Girard Le Coq	Jeanne Rabustel	Collette La Camuse	La femme Pierre Berbis
+B 481-14	1457	Lux	Pierre Rabustel	Jacques Borestel	Dijon		Privé	Jean Rabustel	Jeanne Rabustel	Une femme de l'hôtel	Nourrice	Girard Mareschal
+B 481-15	1457	Lux	Jean Rabustel	Jacques Borestel	Dijon		Privé	Jehanne Rabustel	Philiberte Rabustel	Jeanne fille Isabeau femme Huot
+B 481-16	1457	Lux	Jean Rabustel	Jacques Borestel	Dijon		Privé	Pierre de Lattre	Le frère de Jean Cousin	Odot Douay	Simon Naissant	Michelotte
+B 481-17	1457	Lux	Jean Rabustel	Jacques Borestel	Dijon		Privé
+B 481-18	1457	Lux	Jean Rabustel	Jacques Borestel	Dijon		Privé	Jeanne Rabustel
+B 481-19	1457	Lux	Jean Rabustel	Jacques Borestel	Dijon		Privé	Pierre Rabustel
+B 481-20	1457	Lux	Pierre Rabustel	Jacques Borestel	Dijon		Privé	Jeanne Rabustel	Jean Rabustel	Philiberte Rabustel
+B 481-21	1457	Lux	Jean Rabustel	Jacques Borestel	Dijon		Privé	Mathelin Chenin
+B 481-23	s.d.	Chalon	Philippe Genevoise	Pierre Rabustel	Dijon		Privé	Philippe Douhet
+B 481-24	1457	Lux	Jean Rabustel	Jacques Borestel	Dijon		Privé	Ysabeau femme Huot	Pierre Rabustel	Jacques Rabustel	Pierre de Lattre	Colette N
+B 481-25	1460	Bruxelles	Antoine Girard	Jean Rabustel	Dijon		Privé avec propos professionnels	Pierre Bonféal	Les frères et sœurs et la mère d'Antoine Girard	Jean Guénéaul
+B 481-26	1457	Lux	Pierre Rabustel	Jacques Borestel	Dijon		Privé	Jeanne Rabustel	Jean Rabustel	La femme Simon Naissant
+B 481-27	1457	Lux	Jean Rabustel	Mairie de Dijon	Dijon		Professionnel
+B 481-31	1463	s.l.	Philippe de Courcelles	Jean Rabustel	Dijon	Aymé d'Eschenon maire de Dijon	Professionnel
+B 481-32	1463	Paris	Me Jean Bricet	Jean Rabustel	Dijon		Professionnel	Michel de Pons	La femme de Jean Bricet
+B 481-33	1464	s.l.	Jean Rabustel	Drouot de Marnay	Dijon		Privé avec propos professionnels
+B 481-35	1464	Paris	Jean Gaucher clerc Michel de Pons	Jean Rabustel	Dijon		Professionnel	Michel de Pons
+B 449-65	s.d.	Paris	Michel de Pons	Jean Rabustel	Dijon		Professionnel	La femme de Michel Pons
+B 449-66	1431	s.l.	Ranconjour	Jean Rabustel	Dijon		Privé	Nicolas de Leaune
+B 449-68	1436	Paris	Jean Rabustel	Mairie de Dijon	Dijon		Professionnel	Le procureur du roi	Girard Le Coq
+B 449-70	1442	Paris	Pierre Fusée	Jean Rabustel	Dijon		Professionnel	Le chancelier de Bourgogne	Girard Le Coq
+B 449-71	1442	Paris	Pierre Fusée	Jean Rabustel	Dijon		Professionnel	Girard Le Coq
+B 449-72	1442	Paris	Pierre Fusée	Jean Rabustel	Dijon		Professionnel
+B 449-73	1442	Paris	Pierre Fusée	Jean Rabustel	Dijon		Professionnel	Le procureur ducal
+B 449-74	1442	Paris	Pierre Fusée	Jean Rabustel	Dijon		Professionnel
+B 449-75	1442	Paris	Pierre Fusée	Jean Rabustel	Dijon		Professionnel	Me Guillaume David procureur de R Alardot
+B 449-76	1442	Paris	Pierre Fusée	Jean Rabustel	Dijon		Professionnel
+B 449-77	1443	Paris	Pierre Fusée	Jean Rabustel	Dijon		Professionnel
+B 449-78	1443	Paris	Pierre Fusée	Jean Rabustel	Dijon		Professionnel	Girard Le Coq	Me Thibaut Garnot
+B 449-81	1443	Paris	Pierre Fusée	Jean Rabustel	Dijon		Professionnel	Girard Le Coq	Le clerc de Girard Le Coq
+B 449-82	1443	Paris	Pierre Fusée	Jean Rabustel	Dijon		Professionnel avec mentions privées	Girard Le Coq	Le clerc de Girard Le Coq
+B 449-83	1443	Paris	Pierre Fusée	Jean Rabustel	Dijon		Professionnel	Girard Le Coq	Le procureur du roi
+B 449-84	1443	Paris	Pierre Fusée	Jean Rabustel	Dijon		Professionnel avec mentions privées	Girard Le Coq	Le clerc de Girard Le Coq	Collette La Camuse	La femme de Girard Le Coq	Maître Mathieu, cousin de Pierre Fusée
+B 449-85	1444	Dijon	Jean Rabustel	Pierre Fusée	Paris		Professionnel	Jacques Borestel	Pierre Lesuoley
+B 449-86	1453	Paris	Michel de Pons	Jean Rabustel	Dijon		Professionnel avec mentions privées	Le clerc de Pierre Fusée	Collette La Camuse	Les enfants de Pierre Fusée	Me Guillaume de Gamay	Guy Billet	Eustache Luillier
+B 449-87	1443	Dijon	Jean Rabustel	Pierre Fusée	Paris		Professionnel avec mentions privées	Girard Le Coq	Collette La Camuse	Jacques Borestel
+B 449-88	1443	Paris	Pierre Fusée	Jean Rabustel	Dijon		Professionnel
+B 449-89	1444	Paris	Pierre Fusée	Jean Rabustel	Dijon		Professionnel
+B 449-90 bis	1443	Paris	Jean Rabustel	Mairie de Soissons	Soisson		Professionnel
+B 449-91	1443	Paris	Jean Rabustel	Mairie de Dijon	Dijon		Professionnel	Girard Le Coq	Pierre Fusée	Pierre Baudot	Thibaud Liégeart
+B 449-94	1445	Dijon	Jean Rabustel	Pierre Fusée	Paris		Professionnel	Girard Le Coq	Jacques Borestel
+B 449-95	s.d.	s.l.	Guillemin Le Jeune	Jean Rabustel	Dijon		Privé avec propos professionnels	Nicolas Bastier
+B 449-96	1448	Dijon	Jean Rabustel	Isabelle de Portugal	Cour		Professionnel avec mentions privées	Pierre Baudot	Philippe Le Bon	Mairie de Dijon
+B 449-99	1448	Paris	Jean Rabustel	Mairie de Dijon	Dijon		Professionnel	Le chancelier de Bourgogne	Nicolas Bastier	Thibaud Liégeart	Huguenin Girard	Jean Gros	Mgr de Tournay
+B 449-100	1444	Quesnoy	Jean Rabustel	Mairie de Dijon	Dijon		Professionnel	Philippe Le Bon	Le chancelier de Bourgogne	Isabelle de Portugal	Charles Le Téméraire	Mongin La Corne
+B 449-102	1459	Paris	Michel de Pons	Jean Rabustel	Dijon		Professionnel	Le procureur du roi
+B 449-102 bis	1459	Paris	Michel de Pons	Jean Rabustel	Dijon		Professionnel
+B 449-111	1454	Paris	Michel de Pons	Jean Rabustel	Dijon		Professionnel	Humbelin Langeolet
+B 449-112	1453	Paris	Michel de Pons	Jean Rabustel	Dijon		Professionnel avec mentions privées	Me Guillaume de Gamay	Me Thibaut Garnot	Collette La Camuse	Le clerc de Pierre Fusée	Me Jean Fouquault	Philippe Luillier	Me Jean Bricet
+B 449-113	1448	Lille	Jean Rabustel	Mairie de Dijon	Dijon		Professionnel	Mgr de Tournay	Isabelle de Portugal	Le chancelier de Bourgogne	Jean de Molesmes	Bernard de l'Olive	Jacot Martin	Philippe Le Bon	Charles Le Téméraire	Jean Lanternier
+B 449-114	1454	Dijon	Jean Rabustel	Pierre Rabustel	Strasbourg		Privé	Pierre de Cologne	Jeanne Rabustel	Les enfants de Jean Rabustel	Frère Jean Jaquier	Jean des Dames de Montbéliard
+B 449-114 bis	1454	Dijon	Jean Rabustel	Pierre de Cologne	Strasbourg		Privé	Pierre Rabustel
+B 449-126	1461	Dole	Pierre Rabustel	Aymé d'Eschenon maire de Dijon	Dijon		Privé	Jean Rabustel	Jeanne Rabustel
+B 449-126 bis	1462	s.l.	Jean Gros	Jean Rabustel	Dijon		Privé avec propos professionnels	La femme de Jean Gros	Aymé d'Eschenon maire de Dijon
+B 449-127	1467	Dijon	Jean Rabustel	Michel de Pons	Paris		Professionnel avec mentions privées	Huguenin Boudier
+B 449-129	1465	Dijon	Jean Rabustel	Michel de Pons	Paris		Professionnel	Mairie de Dijon
+B 449-130	1467	Dijon	Mairie de Dijon	Michel de Pons	Paris		Professionnel avec mentions privées	Huguenin Boudier
+B 450-24	1457	Lux	Jean Rabustel	Mairie de Dijon	Dijon		Professionnel	Huguenin Girard	Le procureur ducal
+B 451-26	1448	Bruges	Le chancelier de Bourgogne	Jean de Gray	Dijon		Privé avec propos professionnels	Jean Rabustel	Jean Gros
+B 451-18	1468	Bruxelles	Charles Le Téméraire	Mairie de Dijon	Dijon		Professionnel	Guillaume Billocart	Jean Rabustel
+B 451-19	1473	Bruges	Charles Le Téméraire	Mairie de Dijon	Dijon		Professionnel	Guillaume Billocart	Jean Rabustel
+B 451-20	1473	Bruges	Marguerite d'York	Mairie de Dijon	Dijon		Professionnel	Charles Le Téméraire	Jean Rabustel	Guillaume Billocart
+B 451-22	1472	Arras	Charles Le Téméraire	Mairie de Dijon	Dijon		Professionnel	Guillaume Billocart	Jean Rabustel

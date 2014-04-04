@@ -25,7 +25,6 @@ package eu.sydisnet.neo4j.rabustel.control;
 import eu.sydisnet.neo4j.rabustel.engine.Indexer;
 import eu.sydisnet.neo4j.rabustel.model.KnowsType;
 import eu.sydisnet.neo4j.rabustel.model.Person;
-import eu.sydisnet.neo4j.rabustel.model.SimpleKnowsType;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.tooling.GlobalGraphOperations;
@@ -37,23 +36,97 @@ import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
  * Service class which manages the GraphDatabase.
- *
+ * <p>
  * Created by shebert on 29/03/14.
  */
 @Singleton
 public class GraphEntityManager {
 
-    static final  Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().toString());
+    static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().toString());
 
+    /**
+     * The database
+     */
     GraphDatabaseService dbService;
 
+    /**
+     * The current transaction
+     */
     Transaction currentTx;
 
+    /**
+     * Retrieve a node.
+     *
+     * @param entityClass the corresponding model class node to retrieve
+     * @param primaryKey  the primary key of the model class node
+     * @param <T>         the type of the model class node
+     * @return the corresponding node
+     */
+    public <T> T find(final Class<T> entityClass, final Object primaryKey) {
+        // Start transaction or join current one
+        Transaction newTx = null;
+        if (currentTx == null) {
+            newTx = dbService.beginTx();
+        }
+
+        // Process
+        T entity = null;
+        if (Person.class.equals(entityClass)) {
+            List<Node> nodes = findNodesByLabelAndProperty(DynamicLabel.label(Person.LABEL), Person.NAME, primaryKey);
+            if (nodes != null && !nodes.isEmpty() && nodes.size() == 1) {
+                entity = entityClass.cast(new Person(nodes.get(0)));
+            }
+        }
+
+
+        // Commit transaction if a new one have been required
+        if (newTx != null) {
+            newTx.success();
+            newTx.close();
+        }
+
+        return entity;
+    }
+
+    public Set<Relationship> getRelationships(final Person p1, final Person p2) {
+        // Start transaction or join current one
+        Transaction newTx = null;
+        if (currentTx == null) {
+            newTx = dbService.beginTx();
+        }
+
+        // Process
+        Set<Relationship> relationships = new HashSet<>();
+        for (Relationship rel : p1.getUnderlyingNode().getRelationships(Direction.BOTH)) {
+            if (rel.getOtherNode(p1.getUnderlyingNode()).equals(p2.getUnderlyingNode())) {
+                relationships.add(rel);
+            }
+        }
+
+        // Commit transaction if a new one have been required
+        if (newTx != null) {
+            newTx.success();
+            newTx.close();
+        }
+
+        return relationships;
+    }
+
+    /**
+     * Persists a new Person model class node.
+     *
+     * @param name   the name of the Person
+     * @param origin the origin of the Person.
+     * @param jurist if the Person is a jurist or not.
+     * @return the corresponding model class node.
+     */
     public Person persist(final String name, final String origin, final boolean jurist) {
         // Start transaction or join current one
         Transaction newTx = null;
@@ -64,9 +137,10 @@ public class GraphEntityManager {
         // Process
         Person person = new Person(dbService.createNode(DynamicLabel.label("Personne")));
         person.setName(name);
-        if (origin != null) { person.setOrigin(origin); }
+        if (origin != null) {
+            person.setOrigin(origin);
+        }
         person.setJurist(jurist);
-
 
         // Commit transaction if a new one have been required
         if (newTx != null) {
@@ -99,9 +173,7 @@ public class GraphEntityManager {
             }
         }
         if (relToBeCreated) {
-            Relationship rel1To2 = p1.getUnderlyingNode().createRelationshipTo(p2.getUnderlyingNode(), relType);
-//            rel1To2.setProperty("type", relType.getDescription());
-//        Relationship rel2To1 = p2.getUnderlyingNode().createRelationshipTo(p1.getUnderlyingNode(), SimpleKnowsType.KNOWS);
+            p1.getUnderlyingNode().createRelationshipTo(p2.getUnderlyingNode(), relType);
         }
 
         // Commit transaction if a new one have been required
@@ -111,51 +183,29 @@ public class GraphEntityManager {
         }
     }
 
-    public <T> T find(final Class<T> entityClass, final Object primaryKey) {
-        // Start transaction or join current one
-        Transaction newTx = null;
-        if (currentTx == null) {
-            newTx = dbService.beginTx();
-        }
 
-        // Process
-        // 1. Getting Label
-        Label label = null;
-        String key = null;
-        T entity = null;
-        if (Person.class.equals(entityClass)) {
-            label = DynamicLabel.label( Person.LABEL );
-            key = Person.NAME ;
-            List<Node> nodes = findNodesByLabelAndProperty(label, key, primaryKey);
-            if (nodes != null && !nodes.isEmpty() && nodes.size() == 1) {
-                entity = (T) new Person(nodes.get(0));
-            }
-        }
-
-
-        // Commit transaction if a new one have been required
-        if (newTx != null) {
-            newTx.success();
-            newTx.close();
-        }
-
-        return entity;
-    }
-
-    private List<Node> findNodesByLabelAndProperty(final Label label, final String key, final Object primaryKey) {
+    /**
+     * Helper method which retrieve a list of nodes based on {@code label}, {@code key} and {@code value}.
+     *
+     * @param label the labelized-nodes to seek for
+     * @param key   the key to be includes in search
+     * @param value the value of the key to search
+     * @return the matching list nodes
+     */
+    private List<Node> findNodesByLabelAndProperty(final Label label, final String key, final Object value) {
         List<Node> nodeList = new ArrayList<>();
-        try ( ResourceIterator<Node> resourceIterator = dbService.findNodesByLabelAndProperty(label, key, primaryKey).iterator() )
-        {
-            while (resourceIterator.hasNext()) {
-                nodeList.add(resourceIterator.next());
-            }
 
+        try (ResourceIterator<Node> resourceIterator = dbService.findNodesByLabelAndProperty(label, key, value).iterator()) {
+            resourceIterator.forEachRemaining(nodeList::add);
             resourceIterator.close();
         }
         return nodeList;
     }
 
 
+    /**
+     * Starts a new global transaction.
+     */
     public void beginTransaction() {
         if (currentTx != null) {
             LOG.info("A new transaction is requested so the current one is marked for rollback.");
@@ -166,6 +216,11 @@ public class GraphEntityManager {
         currentTx = dbService.beginTx();
     }
 
+    /**
+     * Commits and then closes the global transaction.
+     *
+     * @throws IllegalStateException in the case of the global transaction does not exist.
+     */
     public void commit() {
         if (currentTx == null) {
             throw new IllegalStateException("Current Transaction is absent ! You have to start a new one before...");
@@ -176,6 +231,11 @@ public class GraphEntityManager {
         currentTx = null;
     }
 
+    /**
+     * Rollbacks and then closes the global transaction.
+     *
+     * @throws IllegalStateException in the case of the global transaction does not exist.
+     */
     public void rollback() {
         if (currentTx == null) {
             throw new IllegalStateException("Current Transaction is absent ! You have to start a new one before...");
@@ -187,73 +247,66 @@ public class GraphEntityManager {
     }
 
 
-
+    /**
+     * Starts the embedded database.
+     */
     @PostConstruct
-    void startDatabase() {
+    private void startDatabase() {
         LOG.info("GraphEntityManager::startDatabase()");
 
         // 1. Starting database
         {
-            long starting = System.currentTimeMillis();
-
+            long starting = System.nanoTime();
             Path dbPath = Paths.get("/opt/java/neo4j/neo4j-community-2.0.1", "data/graph.db");
-
             dbService = new GraphDatabaseFactory()
                     .newEmbeddedDatabase(
                             dbPath.toAbsolutePath().toString()
                     );
-
-            // Registers a shutdown hook for the Neo4j instance so that it
-            // shuts down nicely when the VM exits (even if you "Ctrl-C" the
-            // running application).
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                @Override
-                public void run() {
-                    dbService.shutdown();
-                }
-            });
-
-            LOG.info("Checking GraphDB Availability: " + dbService.isAvailable(60000));
-
-            LOG.info(String.format("Starting database in %d ms.", (System.currentTimeMillis() - starting) / (10 ^ 6)));
+            Runtime.getRuntime().addShutdownHook(new Thread(dbService::shutdown));
+            dbService.isAvailable(60000);
+            LOG.info(String.format("Starting database in %s ms.", (System.nanoTime() - starting) / (Math.pow(10, 6))));
         }
 
-        // 2. Creating indexes
+        // 2. Cleanup the database
         {
             cleanUp();
+        }
 
-            long starting = System.currentTimeMillis();
+        // 3. Creating indexes
+        {
+            long starting = System.nanoTime();
 
             Indexer.index(dbService, "Personne", new String[]{"nom"}, new String[]{"origine", "legiste"});
-            Indexer.index(dbService, "Lettre", new String[]{"numero"}, new String[]{"date", "lieu_envoi", "lieu_reception"});
+            Indexer.index(dbService, "Lettre", new String[]{"numero"}, new String[]{"date_envoi", "lieu_envoi", "lieu_reception"});
 
-            LOG.info(String.format("Creating indexes in %d ms.", (System.currentTimeMillis() - starting) / (10 ^ 6)));
+            LOG.info(String.format("Creating indexes in %s ms.", (System.nanoTime() - starting) / (Math.pow(10, 6))));
         }
     }
 
+    /**
+     * Cleaning up all the database.
+     */
     private void cleanUp() {
-        // First, dropping all objects
         {
-            try ( Transaction tx = dbService.beginTx() )
-            {
-                for (Relationship rel : GlobalGraphOperations.at(dbService).getAllRelationships())
-                {
-                    rel.delete();
-                }
+            try (Transaction tx = dbService.beginTx()) {
+                GlobalGraphOperations.at(dbService)
+                        .getAllRelationships()
+                        .forEach(Relationship::delete);
 
-                for (Node node : GlobalGraphOperations.at(dbService).getAllNodes())
-                {
-                    node.delete();
-                }
+                GlobalGraphOperations.at(dbService)
+                        .getAllNodes()
+                        .forEach(Node::delete);
 
                 tx.success();
             }
         }
     }
 
-
+    /**
+     * Stops the database.
+     */
     @PreDestroy
-    void stopDatabase() {
+    private void stopDatabase() {
         LOG.info("GraphEntityManager::stopDatabase()");
 
         dbService.shutdown();

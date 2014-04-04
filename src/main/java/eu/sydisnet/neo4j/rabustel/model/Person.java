@@ -25,13 +25,12 @@ package eu.sydisnet.neo4j.rabustel.model;
 import org.neo4j.graphdb.Node;
 
 import javax.json.Json;
-import javax.json.JsonObject;
 import javax.json.JsonWriter;
 import java.io.StringWriter;
 
 /**
  * Model: Person.
- *
+ * <p>
  * Created by shebert on 16/03/14.
  */
 public class Person {
@@ -53,50 +52,45 @@ public class Person {
     }
 
     public String getName() {
-        return (String) underlyingNode.getProperty( NAME );
+        return (String) underlyingNode.getProperty(NAME);
     }
 
     public void setName(final String name) {
-        underlyingNode.setProperty( NAME , name);
+        underlyingNode.setProperty(NAME, name);
     }
 
     public String getOrigin() {
-        return (String) underlyingNode.getProperty( ORIGIN );
+        return (String) underlyingNode.getProperty(ORIGIN);
     }
 
     public void setOrigin(final String origin) {
-        underlyingNode.setProperty( ORIGIN , origin);
+        underlyingNode.setProperty(ORIGIN, origin);
     }
 
     public boolean isJurist() {
         return
                 (
-                        underlyingNode.getProperty( JURIST ) != null ?
-                                "Oui".equalsIgnoreCase((String) underlyingNode.getProperty( JURIST )) :
-                                false
+                        underlyingNode.hasProperty(JURIST) && underlyingNode.getProperty(JURIST) != null && "Oui".equalsIgnoreCase((String) underlyingNode.getProperty(JURIST))
                 );
     }
 
     public void setJurist(final boolean jurist) {
         if (jurist) {
-            underlyingNode.setProperty( JURIST , "Oui");
-        }
-        else {
+            underlyingNode.setProperty(JURIST, "Oui");
+        } else {
             underlyingNode.removeProperty(JURIST);
         }
     }
 
 
     @Override
-    public boolean equals( Object o )
-    {
+    public boolean equals(final Object o) {
         return o instanceof Person &&
-                underlyingNode.equals( ( (Person)o ).getUnderlyingNode() );
+                underlyingNode.equals(((Person) o).getUnderlyingNode());
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return underlyingNode.hashCode();
     }
 
@@ -104,11 +98,10 @@ public class Person {
     public String toString() {
         StringWriter stWriter = new StringWriter();
 
-        try (JsonWriter jsonWriter = Json.createWriter(stWriter))
-        {
+        try (JsonWriter jsonWriter = Json.createWriter(stWriter)) {
             jsonWriter.writeObject(
                     Json.createObjectBuilder()
-                            .add( NAME , getName() )
+                            .add(NAME, getName())
                             .build()
             );
         }

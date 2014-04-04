@@ -28,8 +28,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.neo4j.graphdb.schema.ConstraintDefinition;
-import org.neo4j.graphdb.schema.IndexDefinition;
 
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
@@ -43,10 +41,10 @@ import static org.hamcrest.Matchers.*;
 
 /**
  * Starts and stops neo4j Database.
- *
+ * <p>
  * Created by shebert on 15/03/14.
  */
-public class Neo4jStartStopTest {
+public class Neo4jStartStopUT {
 
     static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().toString());
 
@@ -54,7 +52,7 @@ public class Neo4jStartStopTest {
 
     @BeforeClass
     public static void start() {
-        LOG.info("############################## Neo4jStartStopTest::start() ##############################");
+        LOG.info("############################## Neo4jStartStopUT::start() ##############################");
 
         // Given
         Path dbPath = Paths.get("/opt/java/neo4j/neo4j-community-2.0.1",
@@ -69,12 +67,7 @@ public class Neo4jStartStopTest {
         // Registers a shutdown hook for the Neo4j instance so that it
         // shuts down nicely when the VM exits (even if you "Ctrl-C" the
         // running application).
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                DB_SERVICE.shutdown();
-            }
-        });
+        Runtime.getRuntime().addShutdownHook(new Thread(DB_SERVICE::shutdown));
 
         // Expect
         assertThat("GraphDB should not be null", DB_SERVICE, notNullValue());
@@ -84,7 +77,7 @@ public class Neo4jStartStopTest {
 
     @AfterClass
     public static void stop() {
-        LOG.info("############################## Neo4jStartStopTest::stop() ##############################");
+        LOG.info("############################## Neo4jStartStopUT::stop() ##############################");
 
         DB_SERVICE.shutdown();
     }
@@ -93,8 +86,7 @@ public class Neo4jStartStopTest {
     public void should_be_able_to_create_a_relationship_between_two_persons() {
         LOG.info("****************************** should_be_able_to_create_a_relationship_between_two_persons() ******************************");
 
-        try ( Transaction tx = DB_SERVICE.beginTx() )
-        {
+        try (Transaction tx = DB_SERVICE.beginTx()) {
             // Given
             Label person = DynamicLabel.label("Personne");
 
@@ -120,7 +112,7 @@ public class Neo4jStartStopTest {
         LOG.info("****************************** exception_without_label() ******************************");
 
         // When
-        Indexer.index(DB_SERVICE, null, new String[] {"nom"}, new String[]{"origine", "legiste"});
+        Indexer.index(DB_SERVICE, null, new String[]{"nom"}, new String[]{"origine", "legiste"});
     }
 
     @Test
@@ -128,7 +120,7 @@ public class Neo4jStartStopTest {
         LOG.info("****************************** should_be_able_to_deal_with_indexes() ******************************");
 
         // When
-        Indexer.index(DB_SERVICE, "Personne", new String[] {"nom"}, new String[]{"origine", "legiste"});
+        Indexer.index(DB_SERVICE, "Personne", new String[]{"nom"}, new String[]{"origine", "legiste"});
 
         // Expect no exception
 
@@ -157,30 +149,20 @@ public class Neo4jStartStopTest {
      * Helper Method
      *
      * @param constraints the set of constraints to populate
-     * @param indexes the set of indexes to populate
+     * @param indexes     the set of indexes to populate
      */
     private void retrieveConstraintsAndIndexes(final Set<String> constraints,
-                                               final Set<String> indexes)
-    {
-        try ( Transaction tx = DB_SERVICE.beginTx() )
-        {
-            for (ConstraintDefinition cd : DB_SERVICE.schema().getConstraints( DynamicLabel.label( "Personne" ) ) )
-            {
-                for (String constraint : cd.getPropertyKeys())
-                {
-                    constraints.add(constraint);
-                }
-            }
+                                               final Set<String> indexes) {
+        try (Transaction ignored = DB_SERVICE.beginTx()) {
+            DB_SERVICE.schema()
+                    .getConstraints(DynamicLabel.label("Personne"))
+                    .forEach(cd -> cd.getPropertyKeys().forEach(constraints::add)
+                    );
 
-            for (IndexDefinition id : DB_SERVICE.schema().getIndexes( DynamicLabel.label( "Personne" ) ) )
-            {
-                for (String index : id.getPropertyKeys())
-                {
-                    indexes.add(index);
-                }
-            }
-
-            tx.failure();
+            DB_SERVICE.schema()
+                    .getIndexes(DynamicLabel.label("Personne"))
+                    .forEach(id -> id.getPropertyKeys().forEach(indexes::add)
+                    );
         }
     }
 }

@@ -22,24 +22,20 @@ package eu.sydisnet.neo4j.rabustel.suites;
  * #L%
  */
 
-import eu.sydisnet.neo4j.rabustel.control.GraphEntityManagerTest;
-import eu.sydisnet.neo4j.rabustel.engine.DatabaseFactoryTest;
-import eu.sydisnet.neo4j.rabustel.engine.Neo4jStartStopTest;
-import eu.sydisnet.neo4j.rabustel.model.MessageTypesTest;
+import eu.sydisnet.neo4j.rabustel.control.GraphEntityManagerUT;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 /**
  * Tests Suite definition.
- *
+ * <p>
  * Created by shebert on 29/03/14.
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        MessageTypesTest.class,
-        Neo4jStartStopTest.class,
-        DatabaseFactoryTest.class,
-        GraphEntityManagerTest.class
+//        Neo4jStartStopUT.class,
+//        DatabaseFactoryUT.class,
+        GraphEntityManagerUT.class
 })
 public class TestsSuiteLauncher {
 }

@@ -40,17 +40,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
 
 /**
  * Deal with CSV files in {@code src/main/resources} to create a graph database.
- *
+ * <p>
  * Created by shebert on 23/03/14.
  */
-public class DatabaseFactoryTest {
+public class DatabaseFactoryUT {
 
     static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().toString());
 
@@ -58,7 +56,7 @@ public class DatabaseFactoryTest {
 
     @BeforeClass
     public static void start() {
-        LOG.info("############################## DatabaseFactoryTest::start() ##############################");
+        LOG.info("############################## DatabaseFactoryUT::start() ##############################");
 
         // Given
         Path dbPath = Paths.get("/opt/java/neo4j/neo4j-community-2.0.1",
@@ -73,34 +71,33 @@ public class DatabaseFactoryTest {
         // Registers a shutdown hook for the Neo4j instance so that it
         // shuts down nicely when the VM exits (even if you "Ctrl-C" the
         // running application).
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                DB_SERVICE.shutdown();
-            }
-        });
+        Runtime.getRuntime().addShutdownHook(new Thread(DB_SERVICE::shutdown));
 
 
         LOG.info("Checking GraphDB Availability: " + DB_SERVICE.isAvailable(60000));
     }
 
+    @AfterClass
+    public static void stop() {
+        LOG.info("############################## DatabaseFactoryUT::stop() ##############################");
+
+        DB_SERVICE.shutdown();
+    }
+
     @Before
     public void initialize() {
-        LOG.info("############################## DatabaseFactoryTest::initialize() ##############################");
+        LOG.info("############################## DatabaseFactoryUT::initialize() ##############################");
 
         // First, dropping all objects
         {
-            try ( Transaction tx = DB_SERVICE.beginTx() )
-            {
-                for (Relationship rel : GlobalGraphOperations.at(DB_SERVICE).getAllRelationships())
-                {
-                    rel.delete();
-                }
+            try (Transaction tx = DB_SERVICE.beginTx()) {
+                GlobalGraphOperations.at(DB_SERVICE)
+                        .getAllRelationships()
+                        .forEach(Relationship::delete);
 
-                for (Node node : GlobalGraphOperations.at(DB_SERVICE).getAllNodes())
-                {
-                    node.delete();
-                }
+                GlobalGraphOperations.at(DB_SERVICE)
+                        .getAllNodes()
+                        .forEach(Node::delete);
 
                 tx.success();
             }
@@ -118,13 +115,6 @@ public class DatabaseFactoryTest {
         }
     }
 
-    @AfterClass
-    public static void stop() {
-        LOG.info("############################## DatabaseFactoryTest::stop() ##############################");
-
-        DB_SERVICE.shutdown();
-    }
-
     @Test
     public void should_be_able_to_populate_with_persons() throws IOException {
         LOG.info("****************************** should_be_able_to_populate_with_persons() ******************************");
@@ -135,26 +125,19 @@ public class DatabaseFactoryTest {
 
             LOG.info("Lines: " + lines.toString());
 
-            try ( Transaction tx = DB_SERVICE.beginTx() )
-            {
+            try (Transaction tx = DB_SERVICE.beginTx()) {
                 Person person;
                 String[] properties;
                 for (String line : lines)
-                {
-                    if (line != null && !line.isEmpty() && !line.startsWith("#"))
-                    {
+                    if (line != null && !line.isEmpty() && !line.startsWith("#")) {
                         properties = line.split("\t");
 
-                        try ( ResourceIterator<Node> personResourceIterator = DB_SERVICE
-                                .findNodesByLabelAndProperty( DynamicLabel.label("Personne"), "nom", properties[0] )
-                                .iterator() )
-                        {
-                            Node personNode;
-                            if ( personResourceIterator.hasNext() )
-                            {
+                        try (ResourceIterator<Node> personResourceIterator = DB_SERVICE
+                                .findNodesByLabelAndProperty(DynamicLabel.label("Personne"), "nom", properties[0])
+                                .iterator()) {
+                            if (personResourceIterator.hasNext()) {
                                 person = new Person(personResourceIterator.next());
-                            }
-                            else {
+                            } else {
                                 person = new Person(DB_SERVICE.createNode(DynamicLabel.label("Personne")));
                             }
                             personResourceIterator.close();
@@ -165,7 +148,6 @@ public class DatabaseFactoryTest {
 
                         LOG.info(String.format("Current Node: %s", person));
                     }
-                }
 
                 // commit
                 tx.success();
@@ -176,35 +158,27 @@ public class DatabaseFactoryTest {
         {
             List<String> lines = Files.readAllLines(Paths.get("src/main/resources", "personnes/rel_knows.txt"), Charset.defaultCharset());
 
-            try ( Transaction tx = DB_SERVICE.beginTx() )
-            {
+            try (Transaction tx = DB_SERVICE.beginTx()) {
                 String[] properties;
                 boolean firstLine = true;
                 List<Person> personListCol = null;
                 List<Person> personListRow = null;
-                for (String line : lines)
-                {
-                    if (line != null && !line.isEmpty() && !line.startsWith("#"))
-                    {
+                for (String line : lines) {
+                    if (line != null && !line.isEmpty() && !line.startsWith("#")) {
                         properties = line.split("\t");
 
                         // Traitement de la première ligne -> constitution de la liste des personnes
-                        if (firstLine)
-                        {
+                        if (firstLine) {
                             firstLine = false;
                             personListCol = new ArrayList<>();
 
-                            for (int col = 1 ; col < properties.length ; col++)
-                            {
-                                try ( ResourceIterator<Node> personResourceIterator = DB_SERVICE
-                                        .findNodesByLabelAndProperty( DynamicLabel.label("Personne"), "nom", properties[col] )
-                                        .iterator() )
-                                {
-                                    if ( personResourceIterator.hasNext() )
-                                    {
+                            for (int col = 1; col < properties.length; col++) {
+                                try (ResourceIterator<Node> personResourceIterator = DB_SERVICE
+                                        .findNodesByLabelAndProperty(DynamicLabel.label("Personne"), "nom", properties[col])
+                                        .iterator()) {
+                                    if (personResourceIterator.hasNext()) {
                                         personListCol.add(new Person(personResourceIterator.next()));
-                                    }
-                                    else {
+                                    } else {
                                         throw new IllegalArgumentException(String.format("En colonne, /%s/ n'existe pas dans la liste des personnes !", properties[col]));
                                     }
                                     personResourceIterator.close();
@@ -215,24 +189,19 @@ public class DatabaseFactoryTest {
                         }
 
                         // Traitement à partir de la ligne deux
-                        try ( ResourceIterator<Node> personResourceIterator = DB_SERVICE
-                                .findNodesByLabelAndProperty( DynamicLabel.label("Personne"), "nom", properties[0] )
-                                .iterator() )
-                        {
+                        try (ResourceIterator<Node> personResourceIterator = DB_SERVICE
+                                .findNodesByLabelAndProperty(DynamicLabel.label("Personne"), "nom", properties[0])
+                                .iterator()) {
 
                             if (!line.contains("\t")) {
                                 LOG.info(String.format("La personne /%s/ n'a pas de relation sur sa ligne...", properties[0]));
                             }
 
-                            if ( personResourceIterator.hasNext() )
-                            {
+                            if (personResourceIterator.hasNext()) {
                                 Person person = new Person(personResourceIterator.next());
-                                if (!personListCol.contains(person))
-                                {
+                                if (!personListCol.contains(person)) {
                                     throw new IllegalArgumentException(String.format("La ligne /%s/ ne fait pas partie de la liste des personnes en colonne !", properties[0]));
-                                }
-                                else
-                                {
+                                } else {
                                     if (personListRow == null) {
                                         personListRow = new ArrayList<>();
                                     }
@@ -240,12 +209,10 @@ public class DatabaseFactoryTest {
 
                                     // TODO: Création des relations
                                     {
-                                        for (int col = 1 ; col < properties.length ; col++)
-                                        {
+                                        for (int col = 1; col < properties.length; col++) {
                                             Node p1 = personListCol.get(col - 1).getUnderlyingNode();
                                             Node p2 = person.getUnderlyingNode();
-                                            switch (properties[col])
-                                            {
+                                            switch (properties[col]) {
                                                 case "1":
                                                     p1.createRelationshipTo(p2, KnowsType.PROF);
                                                     break;
@@ -259,8 +226,7 @@ public class DatabaseFactoryTest {
                                         }
                                     }
                                 }
-                            }
-                            else {
+                            } else {
                                 throw new IllegalArgumentException(String.format("En ligne, /%s/ n'existe pas dans la liste des personnes !", properties[0]));
                             }
                             personResourceIterator.close();
@@ -268,10 +234,9 @@ public class DatabaseFactoryTest {
                     }
                 }
 
-                LOG.info(String.format("PersonListCol::size(): %d", personListCol.size()));
-                LOG.info(String.format("PersonListRow::size(): %d", personListRow.size()));
+                LOG.info(String.format("PersonListCol::size(): %d", Objects.requireNonNull(personListCol).size()));
+                LOG.info(String.format("PersonListRow::size(): %d", Objects.requireNonNull(personListRow).size()));
                 LOG.info(String.format("PersonListRow::toString(): %s", personListRow));
-
 
 
                 // commit

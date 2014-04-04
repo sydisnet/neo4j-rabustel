@@ -25,10 +25,9 @@ package eu.sydisnet.neo4j.rabustel.engine;
 import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.graphdb.schema.ConstraintDefinition;
-import org.neo4j.graphdb.schema.IndexDefinition;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +35,7 @@ import java.util.logging.Logger;
 
 /**
  * Utility class which create indexes and constraints on schema.
- *
+ * <p>
  * Created by shebert on 15/03/14.
  */
 public class Indexer {
@@ -48,94 +47,87 @@ public class Indexer {
 
     /**
      * <p>
-     *     Create some constraints and other indexes based on property keys on nodes for a given label.
+     * Create some constraints and other indexes based on property keys on nodes for a given label.
      * </p>
      *
-     * @param graphDb the neo4j service wrapper.
-     * @param label the label to constraint. This parameter is mandatory to avoid IllegalArgumentException.
-     * @param constraints is an array of unique constraints.
+     * @param graphDb      the neo4j service wrapper.
+     * @param label        the label to constraint. This parameter is mandatory to avoid IllegalArgumentException.
+     * @param constraints  is an array of unique constraints.
      * @param propertyKeys is an array of property keys.
      */
     public static void index(final GraphDatabaseService graphDb, final String label,
                              final String[] constraints,
-                             final String[] propertyKeys)
-    {
+                             final String[] propertyKeys) {
         // Check parameters
-        if (label == null)
-        {
+        if (label == null) {
             throw new IllegalArgumentException("Label is mandatory and must not be null !");
         }
 
-        try ( Transaction tx = graphDb.beginTx() )
-        {
+        try (Transaction tx = graphDb.beginTx()) {
             // 1. Drop constraints and indexes if existing yet
             {
                 // Dropping constraints
-                for ( ConstraintDefinition constraintDefinition : graphDb
-                        .schema()
-                        .getConstraints(DynamicLabel.label(label)) )
-                {
-                    LOG.info(String.format("Dropping unique constraint: %s.%s",
-                            constraintDefinition.getLabel(),
-                            constraintDefinition.getPropertyKeys().toString()));
-                    constraintDefinition.drop();
-                }
+                graphDb.schema()
+                        .getConstraints(DynamicLabel.label(label))
+                        .forEach(cd -> {
+                            LOG.info(String.format("Dropping unique constraint definition: %s.%s",
+                                    cd.getLabel(),
+                                    cd.getPropertyKeys().toString()));
+                            cd.drop();
+                        });
 
                 // Dropping indexes
-                for ( IndexDefinition indexDefinition : graphDb
+                graphDb
                         .schema()
-                        .getIndexes(DynamicLabel.label(label)) )
-                {
-                    LOG.info(String.format("Dropping index: %s.%s",
-                            indexDefinition.getLabel(),
-                            indexDefinition.getPropertyKeys().toString()));
-                    indexDefinition.drop();
-                }
+                        .getIndexes(DynamicLabel.label(label))
+                        .forEach(id -> {
+                            LOG.info(String.format("Dropping index definition: %s.%s",
+                                    id.getLabel(),
+                                    id.getPropertyKeys().toString()));
+                            id.drop();
+                        });
             }
 
             // 2. Create constraints
             Set<String> propertyKeysYetIndexed = new HashSet<>();
             {
-                if (constraints != null)
-                {
-                    for (String constraint : constraints)
-                    {
-                        if (constraint != null)
-                        {
-                            graphDb.schema().constraintFor(DynamicLabel.label( label ) )
-                                    .assertPropertyIsUnique(constraint)
-                                    .create();
-                            propertyKeysYetIndexed.add(constraint);
+                if (constraints != null) {
+                    Arrays.asList(constraints)
+                            .stream()
+                            .filter(c -> c != null)
+                            .map(c ->
+                            {
+                                graphDb.schema().constraintFor(DynamicLabel.label(label))
+                                        .assertPropertyIsUnique(c)
+                                        .create();
+                                LOG.info(String.format("Adding Constraint: %s.%s", label, c));
+                                return c;
 
-                            LOG.info(String.format("Adding Constraint: %s.%s", label, constraint));
-                        }
-                    }
+                            })
+                            .forEach(propertyKeysYetIndexed::add);
                 }
             }
 
             // 3. Create indexes
             {
-                if (propertyKeys != null)
-                {
-                    for (String propertyKey : propertyKeys)
-                    {
-                        if (propertyKey != null && !propertyKeysYetIndexed.contains(propertyKey))
-                        {
-                            graphDb.schema().indexFor(DynamicLabel.label(label))
-                                    .on(propertyKey)
-                                    .create();
+                if (propertyKeys != null) {
+                    Arrays.asList(propertyKeys)
+                            .stream()
+                            .filter(p -> p != null && !propertyKeysYetIndexed.contains(p))
+                            .forEach(p ->
+                            {
+                                graphDb.schema().indexFor(DynamicLabel.label(label))
+                                        .on(p)
+                                        .create();
 
-                            LOG.info(String.format("Adding Index: %s.%s", label, propertyKey));
-                        }
-                    }
+                                LOG.info(String.format("Adding Index: %s.%s", label, p));
+                            });
                 }
             }
 
             // Expect
             tx.success();
-        }
-        catch (RuntimeException ex)
-        {
+        } catch (RuntimeException ex) {
             LOG.severe(String.format("Unable to index label %s because of the underlying error: %s\n%s",
                     label, ex.getMessage(), ex.toString()));
 
@@ -143,8 +135,7 @@ public class Indexer {
         }
 
         // Waiting for indexes on label
-        try ( Transaction tx = graphDb.beginTx() )
-        {
+        try (Transaction ignored = graphDb.beginTx()) {
             graphDb.schema().awaitIndexesOnline(10, TimeUnit.SECONDS);
         }
     }
