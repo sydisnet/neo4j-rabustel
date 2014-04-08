@@ -60,11 +60,15 @@ public class Person {
     }
 
     public String getOrigin() {
-        return (String) underlyingNode.getProperty(ORIGIN);
+        return (underlyingNode.hasProperty(ORIGIN) && underlyingNode.getProperty(ORIGIN, null) != null ? ((String) underlyingNode.getProperty(ORIGIN)) : null);
     }
 
     public void setOrigin(final String origin) {
-        underlyingNode.setProperty(ORIGIN, origin);
+        if (origin != null) {
+            underlyingNode.setProperty(ORIGIN, origin);
+        } else {
+            underlyingNode.removeProperty(ORIGIN);
+        }
     }
 
     public boolean isJurist() {

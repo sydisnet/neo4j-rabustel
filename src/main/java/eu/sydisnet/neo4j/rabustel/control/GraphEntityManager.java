@@ -23,8 +23,7 @@ package eu.sydisnet.neo4j.rabustel.control;
  */
 
 import eu.sydisnet.neo4j.rabustel.engine.Indexer;
-import eu.sydisnet.neo4j.rabustel.model.KnowsType;
-import eu.sydisnet.neo4j.rabustel.model.Person;
+import eu.sydisnet.neo4j.rabustel.model.*;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.tooling.GlobalGraphOperations;
@@ -68,6 +67,7 @@ public class GraphEntityManager {
      * @param primaryKey  the primary key of the model class node
      * @param <T>         the type of the model class node
      * @return the corresponding node
+     *
      */
     public <T> T find(final Class<T> entityClass, final Object primaryKey) {
         // Start transaction or join current one
@@ -83,6 +83,11 @@ public class GraphEntityManager {
             if (nodes != null && !nodes.isEmpty() && nodes.size() == 1) {
                 entity = entityClass.cast(new Person(nodes.get(0)));
             }
+        } else if (MessageExchange.class.equals(entityClass)) {
+            List<Node> nodes = findNodesByLabelAndProperty(DynamicLabel.label(MessageExchange.LABEL), MessageExchange.NUMBER, primaryKey);
+            if (nodes != null && !nodes.isEmpty() && nodes.size() == 1) {
+                entity = entityClass.cast(new MessageExchange(nodes.get(0)));
+            }
         }
 
 
@@ -95,6 +100,13 @@ public class GraphEntityManager {
         return entity;
     }
 
+    /**
+     * Retrieve all the relationships between two instances of {@link eu.sydisnet.neo4j.rabustel.model.Person}
+     *
+     * @param p1 the first person
+     * @param p2 the other person
+     * @return the relationships between {@code p1} and {@code p2}
+     */
     public Set<Relationship> getRelationships(final Person p1, final Person p2) {
         // Start transaction or join current one
         Transaction newTx = null;
@@ -123,9 +135,10 @@ public class GraphEntityManager {
      * Persists a new Person model class node.
      *
      * @param name   the name of the Person
-     * @param origin the origin of the Person.
-     * @param jurist if the Person is a jurist or not.
-     * @return the corresponding model class node.
+     * @param origin the origin of the Person
+     * @param jurist if the Person is a jurist or not
+     * @return the corresponding model class node instance
+     *
      */
     public Person persist(final String name, final String origin, final boolean jurist) {
         // Start transaction or join current one
@@ -135,11 +148,9 @@ public class GraphEntityManager {
         }
 
         // Process
-        Person person = new Person(dbService.createNode(DynamicLabel.label("Personne")));
+        Person person = new Person(dbService.createNode(DynamicLabel.label(Person.LABEL)));
         person.setName(name);
-        if (origin != null) {
-            person.setOrigin(origin);
-        }
+        person.setOrigin(origin);
         person.setJurist(jurist);
 
         // Commit transaction if a new one have been required
@@ -151,6 +162,15 @@ public class GraphEntityManager {
         return person;
     }
 
+    /**
+     * Persists a new relationship between two instances of {@link eu.sydisnet.neo4j.rabustel.model.Person}, i.e.
+     * {@code p1} and {@code p2} of type {@link eu.sydisnet.neo4j.rabustel.model.KnowsType}
+     *
+     * @param p1 the first person
+     * @param p2 the other person
+     * @param relType the type of the relationship
+     *
+     */
     public void bidirectionalRelationship(final Person p1, final Person p2, final KnowsType relType) {
         // Start transaction or join current one
         Transaction newTx = null;
@@ -175,6 +195,144 @@ public class GraphEntityManager {
         if (relToBeCreated) {
             p1.getUnderlyingNode().createRelationshipTo(p2.getUnderlyingNode(), relType);
         }
+
+        // Commit transaction if a new one have been required
+        if (newTx != null) {
+            newTx.success();
+            newTx.close();
+        }
+    }
+
+    /**
+     * Persists a new MessageExchange model class node.
+     *
+     * @param number              the number of the mail
+     * @param sendingDate         the date if known of the exchange
+     * @param sendingFromLocation the location from the exchange has been sent
+     * @param sendingToLocation   the location where the exchange has been received
+     * @param messageType         the type of the message
+     * @return the corresponding model class node instance
+     */
+    public MessageExchange persist(final String number,
+                                   final Integer sendingDate,
+                                   final String sendingFromLocation,
+                                   final String sendingToLocation,
+                                   final MessageType messageType) {
+        // Start transaction or join current one
+        Transaction newTx = null;
+        if (currentTx == null) {
+            newTx = dbService.beginTx();
+        }
+
+        // Process
+        MessageExchange messageExchange = new MessageExchange(dbService.createNode(DynamicLabel.label(MessageExchange.LABEL)));
+        messageExchange.setNumber(number);
+        messageExchange.setSendingDate(sendingDate);
+        messageExchange.setSendingFromLocation(sendingFromLocation);
+        messageExchange.setSendingToLocation(sendingToLocation);
+        messageExchange.setMessageType(messageType);
+
+        // Commit transaction if a new one have been required
+        if (newTx != null) {
+            newTx.success();
+            newTx.close();
+        }
+
+        return messageExchange;
+    }
+
+    /**
+     * Creates a relationship from the {@code sender} to the {@code messageExchange}
+     * of type {@link eu.sydisnet.neo4j.rabustel.model.MessageDirection#EXPED}.
+     *
+     * @param messageExchange the message exchange
+     * @param sender          the {@link eu.sydisnet.neo4j.rabustel.model.Person} instance which has sent the message
+     */
+    public void setSender(final MessageExchange messageExchange, final Person sender) {
+        // Start transaction or join current one
+        Transaction newTx = null;
+        if (currentTx == null) {
+            newTx = dbService.beginTx();
+        }
+
+        // Process
+        sender.getUnderlyingNode().createRelationshipTo(messageExchange.getUnderlyingNode(), MessageDirection.EXPED);
+
+        // Commit transaction if a new one have been required
+        if (newTx != null) {
+            newTx.success();
+            newTx.close();
+        }
+    }
+
+    /**
+     * Creates a relationship from the {@code messageExchange} to the {@code recipient}
+     * of type {@link eu.sydisnet.neo4j.rabustel.model.MessageDirection#DEST}.
+     *
+     * @param messageExchange the message exchange
+     * @param recipient       the {@link eu.sydisnet.neo4j.rabustel.model.Person} instance which has received the message
+     */
+    public void setRecipient(final MessageExchange messageExchange, final Person recipient) {
+        // Start transaction or join current one
+        Transaction newTx = null;
+        if (currentTx == null) {
+            newTx = dbService.beginTx();
+        }
+
+        // Process
+        messageExchange.getUnderlyingNode().createRelationshipTo(recipient.getUnderlyingNode(), MessageDirection.DEST);
+
+        // Commit transaction if a new one have been required
+        if (newTx != null) {
+            newTx.success();
+            newTx.close();
+        }
+    }
+
+    /**
+     * Creates a relationship from the {@code messageExchange} to the {@code recipient}
+     * of type {@link eu.sydisnet.neo4j.rabustel.model.MessageDirection#DEST} and then creates another
+     * relationship from the {@code messageExchange} to the {@code otherRecipient}
+     * of type {@link eu.sydisnet.neo4j.rabustel.model.MessageDirection#AUTRE_DEST}.
+     *
+     * @param messageExchange the message exchange
+     * @param recipient       the {@link eu.sydisnet.neo4j.rabustel.model.Person} instance which has received the message
+     * @param otherRecipient  the second {@link eu.sydisnet.neo4j.rabustel.model.Person} instance which has benn concerned by this message
+     */
+    public void setRecipients(final MessageExchange messageExchange, final Person recipient, final Person otherRecipient) {
+        // Start transaction or join current one
+        Transaction newTx = null;
+        if (currentTx == null) {
+            newTx = dbService.beginTx();
+        }
+
+        // Process
+        messageExchange.getUnderlyingNode().createRelationshipTo(recipient.getUnderlyingNode(), MessageDirection.DEST);
+        messageExchange.getUnderlyingNode().createRelationshipTo(otherRecipient.getUnderlyingNode(), MessageDirection.AUTRE_DEST);
+
+        // Commit transaction if a new one have been required
+        if (newTx != null) {
+            newTx.success();
+            newTx.close();
+        }
+    }
+
+    /**
+     * Creates a relationship from the {@code messageExchange} to the {@code mentioned}
+     * of type {@link eu.sydisnet.neo4j.rabustel.model.MessageDirection#MENTION}.
+     *
+     * @param messageExchange the message exchange
+     * @param mentioned       the {@link eu.sydisnet.neo4j.rabustel.model.Person} instance which has received the message
+     */
+    public void mention(final MessageExchange messageExchange, final Person mentioned) {
+        // Start transaction or join current one
+        Transaction newTx = null;
+        if (currentTx == null) {
+            newTx = dbService.beginTx();
+        }
+
+        // Process
+        messageExchange.getUnderlyingNode().createRelationshipTo(mentioned.getUnderlyingNode(), MessageDirection.MENTION);
 
         // Commit transaction if a new one have been required
         if (newTx != null) {

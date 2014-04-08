@@ -25,30 +25,11 @@ package eu.sydisnet.neo4j.rabustel.model;
 import org.neo4j.graphdb.RelationshipType;
 
 /**
- * Relationships types.
+ * Direction of the message exchange
  * <p>
- * Created by shebert on 15/03/14.
+ * Created by shebert on 05/04/14.
  */
-public enum MessageType implements RelationshipType {
+public enum MessageDirection implements RelationshipType {
 
-    PROF("Professionnel"), PROF_PRIVATE("Professionnel avec mentions privées"),
-    PRIVATE("Privé"), PRIVATE_PROF("Privé avec propos professionnels");
-
-    private String description = "N/A";
-
-    /**
-     * Constructor
-     *
-     * @param description the human-readable meaning of this particular relationship type.
-     */
-    MessageType(final String description) {
-        this.description = description;
-    }
-
-    /**
-     * @return the human-readable meaning of this particular relationship type.
-     */
-    public String getDescription() {
-        return description;
-    }
+    EXPED, DEST, AUTRE_DEST, MENTION;
 }
