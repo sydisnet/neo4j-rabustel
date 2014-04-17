@@ -67,7 +67,6 @@ public class GraphEntityManager {
      * @param primaryKey  the primary key of the model class node
      * @param <T>         the type of the model class node
      * @return the corresponding node
-     *
      */
     public <T> T find(final Class<T> entityClass, final Object primaryKey) {
         // Start transaction or join current one
@@ -138,7 +137,6 @@ public class GraphEntityManager {
      * @param origin the origin of the Person
      * @param jurist if the Person is a jurist or not
      * @return the corresponding model class node instance
-     *
      */
     public Person persist(final String name, final String origin, final boolean jurist) {
         // Start transaction or join current one
@@ -166,10 +164,9 @@ public class GraphEntityManager {
      * Persists a new relationship between two instances of {@link eu.sydisnet.neo4j.rabustel.model.Person}, i.e.
      * {@code p1} and {@code p2} of type {@link eu.sydisnet.neo4j.rabustel.model.KnowsType}
      *
-     * @param p1 the first person
-     * @param p2 the other person
+     * @param p1      the first person
+     * @param p2      the other person
      * @param relType the type of the relationship
-     *
      */
     public void bidirectionalRelationship(final Person p1, final Person p2, final KnowsType relType) {
         // Start transaction or join current one
@@ -195,6 +192,85 @@ public class GraphEntityManager {
         if (relToBeCreated) {
             p1.getUnderlyingNode().createRelationshipTo(p2.getUnderlyingNode(), relType);
         }
+
+        // Commit transaction if a new one have been required
+        if (newTx != null) {
+            newTx.success();
+            newTx.close();
+        }
+    }
+
+    public void writeTo(final Person p1, final Person p2) {
+        // Start transaction or join current one
+        Transaction newTx = null;
+        if (currentTx == null) {
+            newTx = dbService.beginTx();
+        }
+
+        // Process
+        {
+            boolean relToBeCreated = true;
+            for (Relationship rel : p1.getUnderlyingNode().getRelationships(WriteRelationType.ECRIT_A, Direction.OUTGOING)) {
+                if (rel.getOtherNode(p1.getUnderlyingNode()).equals(p2.getUnderlyingNode())) {
+                    // la relation existe déjà
+                    relToBeCreated = false;
+                }
+            }
+            if (relToBeCreated) {
+                p1.getUnderlyingNode().createRelationshipTo(p2.getUnderlyingNode(), WriteRelationType.ECRIT_A);
+            }
+        }
+
+        // Update Count Outgoing Messages
+        {
+            Integer sendingCount = 0;
+            if (p1.getUnderlyingNode().hasProperty("nb_envois")) {
+                Object strValue = p1.getUnderlyingNode().getProperty("nb_envois", null);
+                if (strValue != null) {
+                    sendingCount = (Integer) strValue;
+                }
+            }
+            sendingCount++;
+            p1.getUnderlyingNode().setProperty("nb_envois", sendingCount.intValue());
+        }
+
+        // Update Count Ingoing Messages
+        {
+            Integer receivingCount = 0;
+            if (p2.getUnderlyingNode().hasProperty("nb_recus")) {
+                Object strValue = p2.getUnderlyingNode().getProperty("nb_recus", null);
+                if (strValue != null) {
+                    receivingCount = (Integer) strValue;
+                }
+            }
+            receivingCount++;
+            p2.getUnderlyingNode().setProperty("nb_recus", receivingCount.intValue());
+        }
+
+        // Update Count Total Messages
+        {
+            Integer nbTotalp1 = 0;
+            if (p1.getUnderlyingNode().hasProperty("nb_total")) {
+                Object strValue = p1.getUnderlyingNode().getProperty("nb_total", null);
+                if (strValue != null) {
+                    nbTotalp1 = (Integer) strValue;
+                }
+            }
+            nbTotalp1++;
+            p1.getUnderlyingNode().setProperty("nb_total", nbTotalp1.intValue());
+        }
+        {
+            Integer nbTotalp2 = 0;
+            if (p2.getUnderlyingNode().hasProperty("nb_total")) {
+                Object strValue = p2.getUnderlyingNode().getProperty("nb_total", null);
+                if (strValue != null) {
+                    nbTotalp2 = (Integer) strValue;
+                }
+            }
+            nbTotalp2++;
+            p2.getUnderlyingNode().setProperty("nb_total", nbTotalp2.intValue());
+        }
+
 
         // Commit transaction if a new one have been required
         if (newTx != null) {
@@ -258,6 +334,18 @@ public class GraphEntityManager {
         // Process
         sender.getUnderlyingNode().createRelationshipTo(messageExchange.getUnderlyingNode(), MessageDirection.EXPED);
 
+        // Update Count Messages
+        Integer sendingCount = 0;
+        if (sender.getUnderlyingNode().hasProperty("nb_envois")) {
+            Object strValue = sender.getUnderlyingNode().getProperty("nb_envois", null);
+            if (strValue != null) {
+                sendingCount = (Integer) strValue;
+            }
+        }
+        sendingCount++;
+        sender.getUnderlyingNode().setProperty("nb_envois", sendingCount.intValue());
+
+
         // Commit transaction if a new one have been required
         if (newTx != null) {
             newTx.success();
@@ -281,6 +369,17 @@ public class GraphEntityManager {
 
         // Process
         messageExchange.getUnderlyingNode().createRelationshipTo(recipient.getUnderlyingNode(), MessageDirection.DEST);
+
+        // Update Count Messages
+        Integer receivingCount = 0;
+        if (recipient.getUnderlyingNode().hasProperty("nb_recus")) {
+            Object strValue = recipient.getUnderlyingNode().getProperty("nb_recus", null);
+            if (strValue != null) {
+                receivingCount = (Integer) strValue;
+            }
+        }
+        receivingCount++;
+        recipient.getUnderlyingNode().setProperty("nb_recus", receivingCount.intValue());
 
         // Commit transaction if a new one have been required
         if (newTx != null) {
@@ -308,7 +407,31 @@ public class GraphEntityManager {
 
         // Process
         messageExchange.getUnderlyingNode().createRelationshipTo(recipient.getUnderlyingNode(), MessageDirection.DEST);
+
+        // Update Count Messages
+        Integer receivingCount = 0;
+        if (recipient.getUnderlyingNode().hasProperty("nb_recus")) {
+            Object strValue = recipient.getUnderlyingNode().getProperty("nb_recus", null);
+            if (strValue != null) {
+                receivingCount = (Integer) strValue;
+            }
+        }
+        receivingCount++;
+        recipient.getUnderlyingNode().setProperty("nb_recus", receivingCount.intValue());
+
+        // Process Other Person
         messageExchange.getUnderlyingNode().createRelationshipTo(otherRecipient.getUnderlyingNode(), MessageDirection.AUTRE_DEST);
+
+        // Update Count Messages for Other
+        Integer otherReceivingCount = 0;
+        if (otherRecipient.getUnderlyingNode().hasProperty("nb_recus")) {
+            Object strValue = otherRecipient.getUnderlyingNode().getProperty("nb_recus", null);
+            if (strValue != null) {
+                otherReceivingCount = (Integer) strValue;
+            }
+        }
+        otherReceivingCount++;
+        otherRecipient.getUnderlyingNode().setProperty("nb_recus", otherReceivingCount.intValue());
 
         // Commit transaction if a new one have been required
         if (newTx != null) {
@@ -415,7 +538,7 @@ public class GraphEntityManager {
         // 1. Starting database
         {
             long starting = System.nanoTime();
-            Path dbPath = Paths.get("/opt/java/neo4j/neo4j-community-2.0.1", "data/graph.db");
+            Path dbPath = Paths.get("/opt/java/neo4j/neo4j-community-2.0.1", System.getProperty("DB_NAME", "data/graph.db"));
             dbService = new GraphDatabaseFactory()
                     .newEmbeddedDatabase(
                             dbPath.toAbsolutePath().toString()

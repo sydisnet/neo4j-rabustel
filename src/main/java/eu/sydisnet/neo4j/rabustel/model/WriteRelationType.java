@@ -1,4 +1,4 @@
-package eu.sydisnet.neo4j.rabustel.suites;
+package eu.sydisnet.neo4j.rabustel.model;
 
 /*
  * #%L
@@ -22,21 +22,14 @@ package eu.sydisnet.neo4j.rabustel.suites;
  * #L%
  */
 
-import eu.sydisnet.neo4j.rabustel.userstories.AllAuthorsAndMessageExchangesUST;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.neo4j.graphdb.RelationshipType;
 
 /**
- * Tests Suite definition.
+ * Direction of the message exchange
  * <p>
- * Created by shebert on 29/03/14.
+ * Created by shebert on 05/04/14.
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-//        Neo4jStartStopUT.class,
-//        DatabaseFactoryUT.class,
-//        GraphEntityManagerUT.class,
-        AllAuthorsAndMessageExchangesUST.class
-})
-public class TestsSuiteLauncher {
+public enum WriteRelationType implements RelationshipType {
+
+    ECRIT_A
 }
